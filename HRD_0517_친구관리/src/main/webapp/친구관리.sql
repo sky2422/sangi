@@ -1,0 +1,95 @@
+CREATE TABLE MEMBER_TBL_11(
+MEMBER_NO NUMBER NOT NULL PRIMARY KEY,
+MEMBER_ID VARCHAR2(10) NOT NULL,
+MEMBER_NAME VARCHAR2(20) NOT NULL,
+MEMBER_GRADE VARCHAR2(100),
+MEMBER_HOBBY VARCHAR2(100),
+MEMBER_DATE DATE
+);
+
+--select.jsp-----------------------------------
+select MEMBER_NO, MEMBER_ID, MEMBER_NAME, 
+decode(MEMBER_GRADE,'S','특별','A','우수','B','일반') as MEMBER_GRADE, 
+nvl(MEMBER_HOBBY,' ') as MEMBER_HOBBY, 
+to_char(MEMBER_DATE,'yyyy.mm.dd.') as MEMBER_DATE
+from MEMBER_TBL_11
+order by MEMBER_ID asc;
+
+select MEMBER_NO, MEMBER_NAME, MEMBER_GRADE, MEMBER_HOBBY, 
+to_char(MEMBER_DATE,'yyyy/mm/dd') as MEMBER_DATE
+from MEMBER_TBL_11 
+where MEMBER_ID='hong';
+---------------------------------------------------
+INSERT INTO MEMBER_TBL_11 VALUES(1001,'hong','홍길동','S','독서,운동,영화','18.01/10');
+INSERT INTO MEMBER_TBL_11 VALUES(1002,'choi','최영문','A','영화','18.01/11');
+INSERT INTO MEMBER_TBL_11 VALUES(1003,'park','박기자','A','독서','18.01/12');
+INSERT INTO MEMBER_TBL_11 VALUES(1004,'lee','이은주','B','운동','18.01/13');
+INSERT INTO MEMBER_TBL_11 VALUES(1005,'kang','강하나','S','','18/01/14');
+
+select * from MEMBER_TBL_11;
+
+CREATE TABLE FRIEND_TBL_11(
+REQ_MEMBER_NO NUMBER NOT NULL,
+RES_MEMBER_NO NUMBER,
+REQ_DATE DATE,
+ALLOW_YN CHAR(1)
+);
+
+INSERT INTO FRIEND_TBL_11 VALUES(1001,1002,'18/09/20','Y');
+INSERT INTO FRIEND_TBL_11 VALUES(1003,1001,'18/09/21','Y');
+INSERT INTO FRIEND_TBL_11 VALUES(1002,1004,'18/09/21','Y');
+INSERT INTO FRIEND_TBL_11 VALUES(1001,1005,'18/09/22','N');
+INSERT INTO FRIEND_TBL_11 VALUES(1002,1005,'18/09/22','Y');
+
+
+select * from FRIEND_TBL_11;
+
+---select2.jsp(첫 번째 방법)------------------------------------------
+--1001이 요청한 건
+select RES_MEMBER_NO, REQ_DATE
+from FRIEND_TBL_11
+where REQ_MEMBER_NO=1001 and ALLOW_YN='Y';
+
+--1001이 요청받은 건
+select REQ_MEMBER_NO, REQ_DATE
+from FRIEND_TBL_11
+where RES_MEMBER_NO=1001 and ALLOW_YN='Y';
+
+--UNION 합집합(중복 제거):요청건과 요청받은 건 하나로
+select RES_MEMBER_NO, REQ_DATE
+from FRIEND_TBL_11
+where REQ_MEMBER_NO=1001 and ALLOW_YN='Y'
+UNION
+select REQ_MEMBER_NO, REQ_DATE
+from FRIEND_TBL_11
+where RES_MEMBER_NO=1001 and ALLOW_YN='Y';
+
+--JOIN
+select MEMBER_ID, MEMBER_NAME, to_char(REQ_DATE,'yyyy-mm-dd') as REQ_DATE
+from MEMBER_TBL_11 m join (	select RES_MEMBER_NO, REQ_DATE
+							from FRIEND_TBL_11
+							where REQ_MEMBER_NO=1001 and ALLOW_YN='Y'
+							UNION
+							select REQ_MEMBER_NO, REQ_DATE
+							from FRIEND_TBL_11
+							where RES_MEMBER_NO=1001 and ALLOW_YN='Y') f
+on (m.MEMBER_NO=f.RES_MEMBER_NO);
+
+---select2.jsp(두 번째 방법)------------------------------------------
+select decode(REQ_MEMBER_NO, 1001, RES_MEMBER_NO, REQ_MEMBER_NO) as MEMBER_NO,REQ_DATE
+from FRIEND_TBL_11
+where (REQ_MEMBER_NO=1001 or RES_MEMBER_NO=1001) and ALLOW_YN='Y';
+
+
+select MEMBER_ID, MEMBER_NAME, to_char(REQ_DATE,'yyyy-mm-dd') as REQ_DATE
+from MEMBER_TBL_11 natural join ( select decode(REQ_MEMBER_NO, 1001, RES_MEMBER_NO, REQ_MEMBER_NO) as MEMBER_NO,REQ_DATE
+								from FRIEND_TBL_11
+								where (REQ_MEMBER_NO=1001 or RES_MEMBER_NO=1001) and ALLOW_YN='Y');
+
+
+commit;
+
+
+
+
+

@@ -1,0 +1,57 @@
+@charset "UTF-8";
+*{
+	box-sizing: border-box;  /*자동으로 border값까지 영역으로 잡아주는 아주 유용한 속성*/
+	margin: 0px; /*바깥쪽 여백*/
+	padding: 0px; /*안쪽 여백*/
+}
+
+header {
+	height: 80px;
+	line-height: 80px;
+	text-align: center;
+	background-color: #800080;
+	color: #ffffff;
+}
+
+nav{
+	height: 30px;
+	line-height: 30px;
+	background-color: #562b57;
+}
+
+nav a{
+	text-decoration: none;
+	color: white;
+	margin-left: 30px;
+}
+
+td a{
+	text-decoration: none;
+	color: #c0c0c0;
+}
+
+section {
+	height: 500px;
+	background-color: #fff0ff;
+	padding: 20px;
+}
+
+section div {
+	text-align: center;
+	margin: 20px;
+}
+
+section ol {
+	margin-left: 30px;
+}
+
+footer {
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	background-color: #800080;
+	color: #ffffff;
+}
+
+
+
